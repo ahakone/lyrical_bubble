@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="lib/jquery-3.1.1.min.js"></script>
+    <!-- // <script src = "http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+    <script type="text/javascript" src="lib/processing.min.js"></script>
+    <!-- // <script src = "http://processingjs.org/js/processing.min.js"></script> -->
+    <script type="text/javascript" src="lib/d3/d3.v3.min.js"></script>
+    <!-- // <script type = "text/javascript" src="http://d3js.org/d3.v3.min.js"></script> -->
+    <link rel="stylesheet" href="stylesheet.css" />
+    <!-- // <script src="http://d3js.org/d3.v3.min.js"></script> -->
+</head>
+<body onload="run()">
+    <h1>Lyrical Pie Bubbles</h1>
+    <div id="names">
+        By: Chris Pike and Anzu Hakone <br>
+        Data adapted from: <a href="http://labrosa.ee.columbia.edu/millionsong/">Million Song Dataset</a>
+    </div>
+    <div class="description">
+        This is an exploratory visualization demo that relates word frequencies across genres. <br>
+        The diameter of the bubbles corresponds to the frequency of a specific word relative to the total word occurrences, and the pie arc lengths correspond to frequencies in their respective genres.<br><br>
+    </div>
+    <div class="songs">
+        Nine Inch Nails: "Metal"; Matchbook Romance: "My Eyes Burn"; Three Doors Down: "Here Without You"; Aerosmith: "I Don't Want To Miss A Thing"; Linkin Park: "Lying From You"<br>
+        Brooklyn Tabernacle Choir: "Lead Me Lord"; Francesca Battistelli: "Lead Me To The Cross (Album Version)"; Chris Tomlin: "Salvation"; Casting Crowns: "Love Them Like Jesus"; Mercy: "House Of God"<br>
+        Lady Sovereign: "Bang Bang"; Flo Rida: "Low [feat.T-Pain"; Snoop Dogg: "The One And Only (Edited)"; 2-Pac: "Let Knowledge Drop"; 50 Cent: "Tipsy"<br>
+        Tracy Chapman: "Fast Car (LP Version)"; Woody Guthrie: "Ranger's Command"; Eric Andersen: "Sudden Love"; Steve Goodman: "This Hotel Room"; Gordon Lightfoot: "Redwood Hill"<br>
+        Armin van Buuren: "Who Is Watching"; DJ Shadow: "Six Days"; La Roux: "Bulletproof"; Deadmau5: "Ghosts &amp; Stuff"; Cascada: "Everytime We Touch"<br>
+        Adele: "Cold Shoulder"; Madonna: "Like A Virgin"; Rihanna: "Disturbia"; Fergie: "London Bridge"; Bridney Spears: "Opps!...I Did It Again"
+    </div>
+    <div class="legends">
+                    <!-- <div id="genre1" width="50px" height="50px">rock</div> -->
+        <svg id="genre1" width="10%" height="30px"></svg>
+        <svg id="genre2" width="10%" height="30px"></svg>
+        <svg id="genre3" width="10%" height="30px"></svg>
+        <svg id="genre4" width="10%" height="30px"></svg>
+        <svg id="genre5" width="10%" height="30px"></svg>
+        <svg id="genre6" width="10%" height="30px"></svg>
+        <svg id="genre7" width="10%" height="30px"></svg>
+    </div>
+	<canvas class = "canvas" id = "canvas1" style="width: 0; height: 0;"></canvas>
+	<script>
+        var genres = [];
+        var blackList = ["to", "the", "a", "in", "on", "and", "of", "but", "not", "am", "would", "with", "that", "they", "your", "y", "this", "it", "my", "do", "for", "te", "when"];
+        var numBubbles = 200;
+        var wc_wordsR = [];
+        var wc_sizesR = [];
+        var genreArrayR = [];
+        var heatmap = [];
+        
+		function run() {
+			var canvas = document.getElementById("canvas1");
+			var processingInstance = new Processing(canvas, sketchProc); 
+
+            var words = {
+                "name" : "flare",
+                children : []
+            }
+
+            var num_words = wc_wordsR.length;
+            for (var i = 0; i < num_words; i++) {
+                words.children.push({
+                    "name" : wc_wordsR[i],
+                    "size" : wc_sizesR[i],
+                    genre : genreArrayR[i]
+                });
+            }
+
+            // Adapted from http://bl.ocks.org/jsl6906/4a1b818b64847fb05d56
+            // and from http://bl.ocks.org/mbostock/4063269
+            var diameter = 960,
+                format = d3.format(",d"),
+                color = d3.scale.category20c();
+
+            var bubble = d3.layout.pack()
+                .sort(null)
+                .size([diameter, diameter])
+                .padding(1.5);
+
+            var svg = d3.select("body").append("svg")
+                .attr("width", diameter)
+                .attr("height", diameter)
+                .attr("class", "bubble");
+                
+            var width = 960,
+                height = 500,
+                radius = 200;
+
+            var color1 = "#8dd3c7"; 
+            var color2 = "#ffffb3";
+            var color3 = "#bebada";
+            var color4 = "#fb8072";
+            var color5 = "#80b1d3";
+            var color6 = "#b3de69";
+            var color7 = "#b3de69";
+            var color = d3.scale.ordinal()
+                .range([color1, color2, color3, color4, color5, color6, color7]);
+
+                console.log(genres.length);
+            for (var i = 1; i <= genres.length; i++) {
+                var s = document.getElementById("genre" + i);
+                s.innerHTML = "<rect width='20' height='20' style='fill:" + color(i) + ";stroke-width:.5;stroke:black' />  <text x='25' y='15' fill='black'>"+ genres[i - 1] + "</text>";
+            }
+
+            var arc = d3.svg.arc() 
+                .innerRadius(0);
+
+            var pie = d3.layout.pie()
+                .sort(null);
+
+            var node = svg.selectAll(".node")
+                .data(bubble.nodes(classes(words))
+                    .filter(function(d) { 
+                        return !d.children; 
+                    }))
+                .enter().append("g")
+                .attr("class", "node")
+                .attr("transform", function(d) { 
+                    return "translate(" + d.x + "," + d.y + ")"; 
+                });
+
+              // hovering
+            node.append("title")
+                .text(function(d) { 
+                    return d.className + ": " + format(d.value); 
+                });
+
+            // pie chart
+            var arcGs = node.selectAll("g.node")
+                .data(function(d) {
+                    return pie(d.genre).map(function(m) {m.r = d.r; return m;});
+                });
+            var arcEnter =  arcGs.enter().append("g").attr("class", "arc");
+
+            arcEnter.append("path")
+                .attr("class", "path")
+                .attr("d", function(d) {
+                    arc.outerRadius(d.r);
+                    return arc(d);
+                })
+                .on("click", function(d) {
+                    var bla = this.id
+                    if(bla != "clicked") {
+                        d3.select(this).attr("id", "clicked");
+
+                        d3.select(this.parentNode)
+                        .attr("id", "clicked")
+                        .append("text")
+                            .attr({
+                                x: function(d) { arc.outerRadius(d.r); return arc.centroid(d)[0]; },
+                                y: function(d) { arc.outerRadius(d.r); return arc.centroid(d)[1]; },
+                                dy: "0.35em"
+                            })
+                            .style("text-anchor", "middle")
+                            .attr("id", d.value + " " + d.genre)
+                            .text(function(d) { if (d.value != 0) return d.value; })
+                    } else {
+                        d3.select(this).attr("id", "unclicked");
+                        d3.select(this.parentNode).select("text").remove();
+                    }
+                })
+                .style("fill", function(d, i) {return color(i); });
+
+            node.append("text")
+                .attr("dy", ".3em")
+                .style("text-anchor", "middle")
+                .text(function(d) { 
+                    return d.className.substring(0, d.r / 3); 
+                });
+
+
+            // Returns a flattened hierarchy containing all leaf nodes under the root.
+            function classes(root) {
+                var classes = [];
+
+                function recurse(name, node) {
+                    if (node.children) {
+                        node.children.forEach(function(child) { 
+                            recurse(node.name, child); 
+                        });
+                    }
+                    else {
+                        classes.push({className: node.name, value: node.size, genre: node.genre});
+                    }
+                }
+
+                recurse(null, root);
+                return {children: classes};
+            }
+            d3.select(self.frameElement).style("height", diameter + "px");
+        }
+
+		function sketchProc(p)
+		{
+			var Song = (function() {
+    	  		function Song() {
+    	    		var $this_1 = this;
+    	    		function $superCstr() {
+    	      			p.extendClassChain($this_1);
+    	    		}
+    	    		$this_1.name = null;
+    			    $this_1.genre = null;
+    			    $this_1.artist = null;
+    			    $this_1.words = null;
+    			    $this_1.frequency = null;
+    			    function $constr_0() {
+    			      	$superCstr();
+
+    				    $this_1.name = "";
+    			      	$this_1.genre = "";
+    			      	$this_1.artist = "";
+    			      	$this_1.words = null; 
+    			      	$this_1.frequency = null;
+    	    		}
+
+                    function $constr() {
+                        if (arguments.length === 0) { 
+                            $constr_0.apply($this_1, arguments);
+                        } 
+                        else {
+                            $superCstr();
+                        }
+                    }
+                    $constr.apply(null, arguments);
+                }
+                return Song;
+            })();
+            
+            p.Song = Song;
+
+            function setup() {
+                var wc_words = [];
+                var wc_sizes = [];
+                var genreArray = [];
+                p.background(255);
+                var userData =  p.loadStrings("userdata.csv");
+                var temp = null;
+
+                temp = p.splitTokens(userData[0], ",");
+                var numSongs =  p.parseInt(temp[1]);
+
+                songs = p.createJavaArray('Song', [numSongs]);
+
+                for (var i =  0; i < numSongs; i++) {
+                    songs[i] = new Song();
+                }
+
+                var cursong =  0;
+                var currow =  1;
+                var curGenre =  "";
+                var curArtist =  "";
+
+                var numGenre =  p.parseInt(temp[0]);
+                for (var i =  1; i < numGenre + 1; i++) {
+                    temp = p.splitTokens(userData[currow], ",");
+                    curGenre = temp[0];
+                    var numArtists =  p.parseInt(temp[1]);
+                    currow++;
+                    for (var j =  0; j < numArtists; j++) {
+                        temp = p.splitTokens(userData[currow], ",");
+                        curArtist = temp[0];
+                        var numS =  p.parseInt(temp[1]);
+                        currow++;
+                        for (var k =  0; k < numS; k++) {
+                            temp = p.splitTokens(userData[currow], ",");
+                            songs[cursong].name = temp[0];
+                            songs[cursong].genre = curGenre;
+                            songs[cursong].artist = curArtist;
+                            cursong++;
+                            currow++;
+                        }
+                    }
+                }
+                
+                var data1 =  p.loadStrings("mxm_779k_matches.txt");    
+                var len =  data1.length;
+                songMatches = p.createJavaArray('String', [len - 18, null]);
+                for (var i =  18; i < len; i++) {
+                    songMatches[i - 18] =  p.split(data1[i], "<SEP>");
+                }
+
+                data1 = p.loadStrings("mxm_dataset_test.txt");    
+                wordArray = p.splitTokens(data1[17], ",");
+
+                len = data1.length;
+                p.print(wordArray.length);
+
+                songData = p.createJavaArray('String', [len-18, null]);
+                for (var i =  18; i < len; i++) {
+                    songData[i - 18] = p.splitTokens(data1[i], ",");
+                }
+
+                var songKeys = null;
+                songKeys = p.createJavaArray('String', [songs.length]);
+                for (var i =  0; i < songKeys.length; i++) {
+                    for (var j =  0; j < songMatches.length; j++) {
+                        var flag1 =  false;
+                        var flag2 =  false;
+                        for (var k =  0; k < songMatches[j].length; k++) {
+                            if (p.__equals(songMatches[j][k], songs[i].name)) {
+                                flag1 = true;
+                            }
+                            if (p.__equals(songMatches[j][k], songs[i].artist)) {
+                                flag2 = true;
+                            }
+                        }
+                        if (flag1 && flag2) {
+                            songKeys[i] = songMatches[j][0];
+                        }
+                    }
+                }
+
+                for (var i =  0; i < songs.length; i++) {
+                    if (songKeys[i] != null) {
+                        for (var j =  0; j < songData.length; j++) {
+                            if (p.__equals(songData[j][0], songKeys[i])) {
+                                songs[i].words = p.createJavaArray('String', [songData[j].length - 2]);
+                                songs[i].frequency = p.createJavaArray('int', [songData[j].length - 2]);
+                                for (var k =  2; k < songData[j].length; k++) {
+                                    temp = p.splitTokens(songData[j][k], ":");
+                                    songs[i].words[k-2] = wordArray[p.parseInt(temp[0])];
+                                    songs[i].frequency[k-2] = p.parseInt(temp[1]);
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                // initializing d3 arrays
+                var numWords =  0;
+                for (var i =  0;  i < songs.length;  i++) {
+                    numWords += songs[i].words.length;
+                }
+
+                var wordc_words =  p.createJavaArray('String', [numWords]);
+                var wordc_sizes =  p.createJavaArray('int', [numWords]);
+
+                for (var i = 0;  i < numWords;  i++) {
+                    wordc_words[i] = "";
+                    wordc_sizes[i] = 0;
+                }
+
+                var index = 0; 
+                for (var k = 0; k < songs.length; k++) {
+                    for (var j = 0; j < songs[k].words.length; j++) {
+                        var flag = true;  
+                        for (var i = 0; i < index; i++) {
+                            if (p.__equals(songs[k].words[j],wordc_words[i])) {
+                                wordc_sizes[index] += songs[k].frequency[j];
+                                flag = false;
+                                break;
+                            }
+                        }
+                        if (flag) {
+                            wordc_words[index] = songs[k].words[j];
+                            wordc_sizes[index] = songs[k].frequency[j]; 
+                            index++;
+                        }
+                    }
+                }
+
+                var numUnique = 0;
+                var totalFreq = 0;
+                for (var i =  0;  i < numWords;  i++) {
+                    if (wordc_sizes[i] != 0) {
+                        numUnique++;
+                    }
+                }
+
+                for (var i =  0;  i < numUnique;  i++) {
+                    wc_words[i] = wordc_words[i];
+                    wc_sizes[i] = wordc_sizes[i];
+                }
+
+                // parsing for songs by genre
+                genres = p.createJavaArray('String', [numGenre]);
+                var index =  0;
+                for(var i =  0;  i < songs.length;  i++) {
+                    var flag =  true;
+                    for(var j =  0;  j < index;  j++) {
+                        if (p.__equals(songs[i].genre,genres[j])) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if(flag) {
+                        genres[index] = songs[i].genre;
+                        index++;
+                    }
+                }
+
+                genreArray = p.createJavaArray('int', [numUnique, null]);
+                for(var i = 0;  i < numUnique;  i++) {
+                    genreArray[i] = p.createJavaArray('int', [numGenre]);
+                    for(var j =  0;  j < numGenre;  j++) {
+                        genreArray[i][j] = 0;
+                    }
+                }
+
+                for(var i =  0;  i < songs.length;  i++) {
+                    for(var j =  0;  j < songs[i].words.length;  j++) {
+                        for(var k =  0;  k < numUnique;  k++) {
+                            if(p.__equals(wc_words[k],songs[i].words[j])) {
+                                for(var l =  0;  l < genres.length;  l++) {
+                                    if(p.__equals(songs[i].genre,genres[l])) {
+                                        genreArray[k][l] += songs[i].frequency[j];
+                                    }
+                                }   
+                            }
+                        }
+                    }
+                }
+
+                for (var i = 0; i < numUnique; i++) {
+                    wc_sizes[i] = d3.sum(genreArray[i]);
+                }
+
+
+                // parsing for heatmap - we didn't use this
+                /*heatmap = new Array(numGenre);
+                for (var i = 0; i < numGenre; i++) {
+                    heatmap[i] = new Array(numGenre);
+                }
+                for(var i = 0; i < numGenre; i++) {
+                    // heatmap[i] = new int[numGenre];
+                    for(var j = 0; j < numGenre; j++) {
+                        heatmap[i][j] = 0;
+                    } 
+                }
+                 
+                for(var i = 0; i < numUnique; i++) {
+                    for(var j = 0; j < numGenre; j++) {
+                        if(genreArray[i][j] > 0) {
+                            for(var k = j; k < numGenre; k++) {
+                                if(genreArray[i][k] > 0) {
+                                    heatmap[numGenre - 1 - j][k]++;
+                                    if(j != k) {
+                                        heatmap[numGenre - 1 - k][j]++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+*/
+
+                //filtering through "blacklist" words
+                var index = 0;
+                for (var i = 0; i <  numBubbles; i++) {
+                    var maxIndex = wc_sizes.indexOf(Math.max.apply(Math, wc_sizes));
+                    var flag = false;
+                    if (maxIndex > -1) {
+                        if (blackList.indexOf(wc_words[maxIndex]) > -1) {
+                            wc_words.splice(maxIndex, 1);
+                            wc_sizes.splice(maxIndex, 1);
+                            genreArray.splice(maxIndex, 1);
+                        } 
+                        else {
+                            wc_wordsR[index] = wc_words[maxIndex];
+                            wc_sizesR[index] = wc_sizes[maxIndex];
+                            genreArrayR[index] = genreArray[maxIndex];
+
+                            wc_words.splice(maxIndex, 1);
+                            wc_sizes.splice(maxIndex, 1);
+                            genreArray.splice(maxIndex, 1);
+                            flag = true;
+                            index++;
+                        }
+                    }
+                    if(!flag) {
+                        i--;
+                    }
+                }
+            }
+
+            p.setup = setup;
+
+            function draw() {
+            }
+            p.draw = draw;
+		}
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,48 @@
+# musiXmatch dataset - list of matches
+#     matches provided by musiXmatch based on artist names
+#     and song titles from the Million Song Dataset.
+# MORE INFORMATION:
+#     http://labrosa.ee.columbia.edu/millionsong/musixmatch
+# FORMAT:
+#     #    -> comment, ignore
+#     tid|artist name|title|mxm tid|artist_name|title
+#        tid          -> Million Song Dataset track ID
+#        artist name  -> artist name in the MSD
+#        title        -> title in the MSD
+#        mxm tid      -> musiXmatch track ID
+#        artist name  -> artist name for mXm
+#        title        -> title for mXm
+#        |            -> actual separator: <SEP>
+# QUESTIONS / COMMENTS
+#     tb2332@columbia.edu
+# Enjoy!
+TRAAGEC128E079252C<SEP>Nine Inch Nails<SEP>Metal<SEP>12376617<SEP>Nine Inch Nails<SEP>Metal
+TRAAIKA128F426D3BB<SEP>Matchbook Romance<SEP>My Eyes Burn (Album Version)<SEP>2283382<SEP>Matchbook Romance<SEP>My Eyes Burn
+TRQIDYC128F427EA09<SEP>3 Doors Down<SEP>Here Without You<SEP>6255009<SEP>3 Doors Down<SEP>Here Without You
+TRDYLVO12903CBA760<SEP>Aerosmith<SEP>I Don't Want To Miss A Thing<SEP>4038555<SEP>Aerosmith<SEP>I Don't Want to Miss a Thing
+TRFLRAO128F1480E87<SEP>Linkin Park<SEP>Lying From You (Live In Texas)<SEP>6386222<SEP>Linkin Park<SEP>Lying From You (live)
+TRAAHRF128F92FE234<SEP>The Brooklyn Tabernacle Choir<SEP>Lead Me Lord<SEP>2604201<SEP>Brooklyn Tabernacle Choir<SEP>Lead Me Lord
+TRNYXML12903CA599A<SEP>Francesca Battistelli<SEP>Lead Me To The Cross (Album Version)<SEP>9698243<SEP>Francesca Battistelli<SEP>Lead Me to the Cross
+TRUEJAU128F14B0C90<SEP>Chris Tomlin<SEP>Salvation<SEP>2081671<SEP>Chris Tomlin<SEP>Salvation
+TRBLPRO12903CCD87A<SEP>Casting Crowns<SEP>Love Them Like Jesus (Low without background vocals)<SEP>4090329<SEP>Casting Crowns<SEP>Love Them Like Jesus
+TRONQIP128F429D7DF<SEP>MercyME<SEP>House Of God<SEP>831556<SEP>MercyMe<SEP>House of God
+TRAAHYK128F932A08F<SEP>Lady Sovereign<SEP>Bang Bang<SEP>8226527<SEP>Lady Sovereign<SEP>Bang Bang
+TRAAIBF128F4282493<SEP>Flo Rida<SEP>Low [feat. T-Pain] [Travis Barker Remix]<SEP>13169255<SEP>Flo Rida<SEP>Low (Travis Barker Remix) (feat. T-Pain)
+TRAAAHZ128E0799171<SEP>Snoop Dogg<SEP>The One And Only (Edited)<SEP>1619153<SEP>Snoop Dogg<SEP>The One and Only
+TRFXRUC128F42AAA36<SEP>2-Pac<SEP>Let Knowledge Drop<SEP>5099471<SEP>2Pac<SEP>Let Knowledge Drop
+TRTQMEY128F931E67D<SEP>50 Cent<SEP>Tipsy<SEP>4530081<SEP>50 Cent<SEP>Bring It All to Me (remix) (feat. 50 Cent)
+TRAADKW128E079503A<SEP>Tracy Chapman<SEP>Fast Car (LP Version)<SEP>692306<SEP>Tracy Chapman<SEP>Fast Car
+TRPHRYB12903CAAACE<SEP>Woody Guthrie<SEP>Ranger's Command<SEP>3091032<SEP>Woody Guthrie<SEP>Ranger's Command
+TROJNHA12903CA3C2F<SEP>Eric Andersen<SEP>Sudden Love<SEP>2550310<SEP>Eric Andersen<SEP>Is It Really Love at All
+TRMVEGH128F92F75A2<SEP>Steve Goodman<SEP>This Hotel Room<SEP>1524308<SEP>Steve Goodman<SEP>This Hotel Room
+TRCUNSY12903CC48A7<SEP>Gordon Lightfoot<SEP>Redwood Hill (Album Version)<SEP>1368489<SEP>Gordon Lightfoot<SEP>Redwood Hill
+TRGGVLY128F93289FD<SEP>Armin van Buuren<SEP>Who Is Watching<SEP>5594194<SEP>Armin van Buuren<SEP>Who Is Watching
+TRSCSSY128F147CC31<SEP>DJ Shadow<SEP>Six Days<SEP>927956<SEP>DJ Shadow<SEP>Six Days
+TRRUVLO128F92DE6F7<SEP>La Roux<SEP>Bulletproof<SEP>9562333<SEP>La Roux<SEP>Bulletproof
+TRXIFOZ128F93518E5<SEP>Deadmau5<SEP>Ghosts & Stuff<SEP>9370413<SEP>deadmau5<SEP>Ghosts 'n' Stuff (feat. Rob Swire)
+TRBTWJK128EF366021<SEP>Cascada<SEP>Everytime We Touch<SEP>9501864<SEP>Cascada<SEP>Everytime We Touch
+TRLBWLW128F427CFFA<SEP>Adele<SEP>Cold Shoulder<SEP>6865984<SEP>Adele<SEP>Cold Shoulder
+TRDENBR128E0786BFA<SEP>Madonna<SEP>Like A Virgin (Edit Version)<SEP>804398<SEP>Madonna<SEP>Like a Virgin
+TRPAUBR128F92F653F<SEP>Rihanna<SEP>Disturbia<SEP>8101893<SEP>Rihanna<SEP>Disturbia (album version)
+TRFWTOJ128F42415F8<SEP>Fergie<SEP>London Bridge<SEP>7299303<SEP>Fergie<SEP>London Bridge
+TRBAUVN128F932FEF8<SEP>Britney Spears<SEP>Oops!...I Did It Again<SEP>9972859<SEP>Britney Spears<SEP>Oops!... I Did It Again
